@@ -1,0 +1,19 @@
+{
+    "name": "Page action by URL",
+    "version": "1.0",
+    "description": "Shows a page action for urls which have the letter 'g' in them.",
+    "background": {
+        "scripts": ["background.js", "libs/underscore-min.js"]
+    },
+    "page_action": {
+        "default_icon": "images/black-19.png",
+        "default_title": "There's a 'G' in this URL!"
+    },
+    "permissions": [
+        "tabs"
+    ],
+    "icons": {
+        "19": "images/logo-19.png"
+    },
+    "manifest_version": 2
+}
