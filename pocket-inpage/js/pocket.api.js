@@ -1,5 +1,5 @@
 define(['jquery', 'underscore'], function ($, _) {
-    var resolve = function(obj){
+    var resolve = function (obj) {
         var d = new $.Deferred();
         d.resolve(obj);
         return d.promise();
@@ -8,29 +8,24 @@ define(['jquery', 'underscore'], function ($, _) {
 
     var PocketApi = function () {
 
-        if (!indexedDB['urls'])
-            indexedDB['urls'] = [];
-
         return {
             saveAccessToken: function (obj) {
                 localStorage['access_token'] = obj.access_token;
             },
 
             isAuthorized: function () {
-                //return localStorage['access_token'];
-                return false;
+                return localStorage['access_token'];
             },
 
 
             authorize: function () {
-                if (!this.isAuthorized()) {
+                if (this.isAuthorized()) {
+                    return resolve(true);
+                } else {
                     return this.obtainRequestToken()
-                        .then(_.bind(this.openLoginPage,this))
+                        .then(_.bind(this.openLoginPage, this))
                         .then(_.bind(this.authorizeApp, this))
                         .then(_.bind(this.saveAccessToken, this));
-                }
-                else {
-                    return resolve(true);
                 }
             },
 
@@ -64,25 +59,31 @@ define(['jquery', 'underscore'], function ($, _) {
             },
 
             isAdded: function (url) {
-                var defer = new $.Deferred();
-                defer.resolve(indexedDB['urls'].indexOf(url) >= 0);
-                return defer.promise();
+                if (this.isAuthorized() && url.indexOf('chrome://')!=0 && url.indexOf('http://http://getpocket.com/a/')!=0) {
+                    return this.makeCall('get',
+                        {
+                            state: 'unread',
+                            detailType: 'simple',
+                            search: url
+                        }
+                    ).pipe(function (result) {
+                            return resolve(_.find(result.list,
+                                function (item) {
+                                    return item.resolved_url == url;
+                                }));
+                        });
+                }
+                else {
+                    return resolve(false);
+                }
             },
 
             add: function (url, tags) {
-                indexedDB['urls'].push(url);
-                var deffer = new $.Deferred();
-                deffer.resolve({url: url});
-                return deffer.promise();
+                return resolve(false);
             },
 
             remove: function (url) {
-                var index = indexedDB['urls'].indexOf(url);
-                if (index >= 0)
-                    indexedDB['urls'].splice(index, 1);
-                var deffer = new $.Deferred();
-                deffer.resolve();
-                return deffer.promise();
+                return resolve(false);
             },
 
             makeCall: function (path, data) {
