@@ -4,18 +4,16 @@
     "description": "Shows a page action for urls which have the letter 'g' in them.",
     "background": {
         "scripts": [
-            "libs/underscore-min.js",
-            "libs/jquery-1.10.1.min.js",
-            "pocket.api.js",
-            "background.js"
-            ]
+            "libs/require.js",
+            "app.js"
+        ]
     },
     "page_action": {
         "default_icon": "images/black-19.png",
         "default_title": "There's a 'G' in this URL!"
     },
     "permissions": [
-        "tabs","http://*/","https://*/"
+        "tabs", "http://*/", "https://*/"
     ],
     "icons": {
         "19": "images/logo-19.png"
