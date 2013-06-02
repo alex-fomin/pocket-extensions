@@ -3,7 +3,11 @@ require(['js/pocket.api'], function (PocketApi) {
     var pocket = new PocketApi();
 
     function onActionClick(tab) {
-        pocket.isAdded(tab.url)
+        pocket.authorize().done(function(){
+            console.log('ok')
+        });
+
+/*        pocket.isAdded(tab.url)
             .then(function (isAdded) {
                 var deffer = isAdded ? pocket.remove(tab.url) : pocket.add(tab.url);
                 return deffer.then(function () {
@@ -13,7 +17,7 @@ require(['js/pocket.api'], function (PocketApi) {
             .done(function (isAdded) {
                 showIcon(tab.id, !isAdded)
             });
-    }
+  */  }
 
 
     function onTabUpdate(tabId, changeInfo, tab) {
