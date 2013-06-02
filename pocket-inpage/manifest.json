@@ -3,7 +3,7 @@
     "version": "1.0",
     "description": "Shows a page action for urls which have the letter 'g' in them.",
     "background": {
-        "scripts": ["background.js", "libs/underscore-min.js"]
+        "scripts": ["background.js", "libs/underscore-min.js", "pocket.api.js"]
     },
     "page_action": {
         "default_icon": "images/black-19.png",
