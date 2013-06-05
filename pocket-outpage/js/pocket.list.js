@@ -3,7 +3,7 @@ define(['jquery', 'underscore'], function ($, _) {
         this.getItems = function () {
             var since = storage.getSince()
 
-            var delta = new Date().getTime()/1000 - since;
+            var delta = new Date().getTime() / 1000 - since;
 
             if (delta > 3600000) { // one hour
 
@@ -25,13 +25,22 @@ define(['jquery', 'underscore'], function ($, _) {
                 });
 
 
-               return d.then(function (items) {
-                        return storage.update(items);
-                    })
+                return d.then(function (items) {
+                    return storage.update(items);
+                })
             }
             else {
                 return storage.getItems()
             }
+        };
+
+        this.isAdded = function (url) {
+            return storage.getItems()
+                .then(function (items) {
+                   return _.any(items.list, function(item){
+                       return item.resolved_url == url || item.given_url == url
+                   });
+                });
         }
     };
 });

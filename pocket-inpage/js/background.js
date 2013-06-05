@@ -1,6 +1,4 @@
-require(['js/pocket.api'], function (PocketApi) {
-
-    var pocket = new PocketApi();
+require(['js/communicate'], function (pocket) {
 
     function onActionClick(tab) {
         pocket.isAdded(tab.url)
