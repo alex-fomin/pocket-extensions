@@ -67,6 +67,9 @@ var chrome = {
         "getBackgroundPage": function () {
 
         }
+        "getURL": function (url) {
+
+        }
     },
 
     "tabs": {
@@ -79,7 +82,14 @@ var chrome = {
 	OnClicked:{
 		addListener:function(onClick){}
 	}
-	}
+	},
+
+	"windows":{
+	onRemoved:{
+		removeListener: function(listener)
+}
+}
+
 
 };
 

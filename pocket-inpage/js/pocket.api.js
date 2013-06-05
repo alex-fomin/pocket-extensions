@@ -6,17 +6,36 @@ define(['jquery', 'underscore'], function ($, _) {
     };
     var redirectUri = chrome.extension.getURL('html/redirect.html');
 
+
+
+    var makeCall = function (path, data) {
+        var dataToSend = $.extend({
+            consumer_key: PocketApi.consumerKey,
+            access_token: localStorage['access_token']
+        }, data);
+
+        return $.ajax({
+            url: 'https://getpocket.com/v3/' + path,
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            beforeSend: function (request) {
+                request.setRequestHeader('X-Accept', 'application/json');
+            },
+            data: JSON.stringify(dataToSend)
+        });
+    };
+
     var PocketApi = function () {
 
-        return {
-            saveAccessToken: function (obj) {
-                localStorage['access_token'] = obj.access_token;
-            },
-
+        var authentication = {
             isAuthorized: function () {
                 return localStorage['access_token'];
             },
 
+            saveAccessToken: function (obj) {
+                localStorage['access_token'] = obj.access_token;
+            },
 
             authorize: function () {
                 if (this.isAuthorized()) {
@@ -49,24 +68,30 @@ define(['jquery', 'underscore'], function ($, _) {
             },
 
             authorizeApp: function (code) {
-                return this.makeCall('oauth/authorize', {code: code});
+                return makeCall('oauth/authorize', {code: code});
             },
 
             obtainRequestToken: function () {
-                return this.makeCall('oauth/request', {
-                    redirect_uri: redirectUri
-                });
+                return makeCall('oauth/request', { redirect_uri: redirectUri });
+            }
+        };
+
+
+        return {
+
+            isAllowed:function(url){
+                return url.indexOf('chrome://')<0 && url.indexOf('http://getpocket.com/a/')<0;
             },
 
             isAdded: function (url) {
-                if (this.isAuthorized() && url.indexOf('chrome://')!=0 && url.indexOf('http://http://getpocket.com/a/')!=0) {
-                    return this.makeCall('get',
+                if (authentication.isAuthorized()) {
+                    return makeCall('get',
                         {
                             state: 'unread',
                             detailType: 'simple',
                             search: url
                         }
-                    ).pipe(function (result) {
+                    ).then(function (result) {
                             return resolve(_.find(result.list,
                                 function (item) {
                                     return item.resolved_url == url;
@@ -84,24 +109,6 @@ define(['jquery', 'underscore'], function ($, _) {
 
             remove: function (url) {
                 return resolve(false);
-            },
-
-            makeCall: function (path, data) {
-                var dataToSend = $.extend({
-                    consumer_key: PocketApi.consumerKey,
-                    access_token: localStorage['access_token']
-                }, data);
-
-                return $.ajax({
-                    url: 'https://getpocket.com/v3/' + path,
-                    type: 'POST',
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json',
-                    beforeSend: function (request) {
-                        request.setRequestHeader('X-Accept', 'application/json');
-                    },
-                    data: JSON.stringify(dataToSend)
-                });
             }
         }
     };
