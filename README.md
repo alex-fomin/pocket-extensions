@@ -11,7 +11,3 @@ Add inpage action to add/remove page to/from Pocket
 pocket-outpage
 --------------
 Open random saved url
-
-- [ ] Icons
-- [ ] Storing items in IndexedDB
-- [ ] Remove item from pocket
