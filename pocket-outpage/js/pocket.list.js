@@ -1,7 +1,12 @@
-define(['jquery', 'underscore'], function ($, _) {
-    return function (pocketApi, storage) {
-        this.getItems = function () {
-            var since = storage.getSince()
+define([
+    'jquery'
+    , 'underscore'
+    , 'js/indexedDbStorage'
+    , 'js/pocket.api'
+], function ($, _, storage, pocketApi) {
+    return {
+        getItems: function () {
+            var since = storage.getSince();
 
             var delta = new Date().getTime() / 1000 - since;
 
@@ -32,14 +37,14 @@ define(['jquery', 'underscore'], function ($, _) {
             else {
                 return storage.getItems()
             }
-        };
+        },
 
-        this.isAdded = function (url) {
-            return storage.getItems()
+        isAdded: function (url) {
+            return this.getItems()
                 .then(function (items) {
-                   return _.any(items.list, function(item){
-                       return item.resolved_url == url || item.given_url == url
-                   });
+                    return _.any(items, function (item) {
+                        return item.resolved_url == url || item.given_url == url
+                    });
                 });
         }
     };

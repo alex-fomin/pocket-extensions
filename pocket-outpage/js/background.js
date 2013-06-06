@@ -1,6 +1,6 @@
-require(['underscore', 'js/container'], function (_, container) {
+require(['underscore', 'js/pocket.list'], function (_, pocketList) {
     chrome.browserAction.onClicked.addListener(function () {
-        container.pocketList.getItems()
+        pocketList.getItems()
             .done(function (items) {
                 var list = _.values(items.list);
                 var item = list[_.random(list.length - 1)];
@@ -13,12 +13,15 @@ require(['underscore', 'js/container'], function (_, container) {
     chrome.runtime.onMessageExternal.addListener(
         function (request, sender, sendResponse) {
             if (request.isAdded) {
-                container.pocketList.isAdded(request.isAdded)
+                pocketList.isAdded(request.isAdded)
                     .done(function (result) {
                         sendResponse({isAdded: result})
                     });
-            } else if (request.remove){
-                container.pocketList.remove(request.remove)
+            } else if (request.remove) {
+                pocketList.remove(request.remove)
+            }
+            else if (request.add) {
+                pocketList.add(request.add)
             }
         });
 

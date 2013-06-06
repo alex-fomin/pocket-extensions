@@ -66,7 +66,7 @@ var chrome = {
          */
         "getBackgroundPage": function () {
 
-        }
+        },
         "getURL": function (url) {
 
         }
@@ -78,17 +78,19 @@ var chrome = {
             }
         }
     },
-    "pageAction":{
-	OnClicked:{
-		addListener:function(onClick){}
-	}
-	},
+    "pageAction": {
+        OnClicked: {
+            addListener: function (onClick) {
+            }
+        }
+    },
 
-	"windows":{
-	onRemoved:{
-		removeListener: function(listener)
-}
-}
+    "windows": {
+        onRemoved: {
+            removeListener: function (listener) {
+            }
+        }
+    }
 
 
 };

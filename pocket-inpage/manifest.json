@@ -9,7 +9,7 @@
         ]
     },
     "page_action": {
-        "default_icon": "images/black-19.png",
+        "default_icon": "images/notAdded-19.png",
         "default_title": "There's a 'G' in this URL!"
     },
     "permissions": [

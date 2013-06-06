@@ -15,16 +15,21 @@ require(['js/communicate'], function (pocket) {
 
 
     function onTabUpdate(tabId, changeInfo, tab) {
-        chrome.pageAction.show(tabId);
-        pocket.isAdded(tab.url)
-            .done(function (isAdded) {
-                showIcon(tabId, isAdded);
-            });
+        if (tab.url.indexOf('chrome://') == 0) {
+            chrome.pageAction.hide(tabId);
+        }
+        else {
+            chrome.pageAction.show(tabId);
+            pocket.isAdded(tab.url)
+                .done(function (isAdded) {
+                    showIcon(tabId, isAdded);
+                });
+        }
     }
 
     function showIcon(tabId, isAdded) {
-        var addedIcon = {"19": "images/red-19.png"};
-        var notAddedIcon = {"19": "images/black-19.png"};
+        var addedIcon = {"19": "images/added-19.png"};
+        var notAddedIcon = {"19": "images/notAdded-19.png"};
         chrome.pageAction.setIcon({
             tabId: tabId,
             path: isAdded ? addedIcon : notAddedIcon
