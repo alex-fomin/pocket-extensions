@@ -2,8 +2,7 @@ require(['underscore', 'js/pocket.list'], function (_, pocketList) {
     chrome.browserAction.onClicked.addListener(function () {
         pocketList.getItems()
             .done(function (items) {
-                var list = _.values(items.list);
-                var item = list[_.random(list.length - 1)];
+                var item = items[_.random(items.length - 1)];
                 chrome.tabs.getSelected(null, function (tab) {
                     chrome.tabs.update(tab.id, {url: item.resolved_url});
                 });
@@ -17,12 +16,18 @@ require(['underscore', 'js/pocket.list'], function (_, pocketList) {
                     .done(function (result) {
                         sendResponse({isAdded: result})
                     });
+                return true;
             } else if (request.remove) {
                 pocketList.remove(request.remove)
             }
             else if (request.add) {
                 pocketList.add(request.add)
+                    .done(function () {
+                        sendResponse({isAdded: true})
+                    });
+                return true;
             }
+            return false;
         });
 
 });

@@ -10,6 +10,9 @@ define([
         authentication: authentication,
         getItems: function (config) {
             return utils.makeCall('get', config);
+        },
+        add: function (config) {
+            return utils.makeCall('add', config);
         }
     };
 });

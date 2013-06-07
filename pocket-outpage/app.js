@@ -9,4 +9,4 @@ requirejs.config({
         }
     }
 });
-requirejs(["js/background"]);
+requirejs(["js/outpage"]);

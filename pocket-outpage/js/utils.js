@@ -1,4 +1,4 @@
-define(['jquery', 'underscore'], function ($, _) {
+define(['jquery'], function ($) {
     return {
         resolve: function (obj) {
             var d = new $.Deferred();
@@ -23,18 +23,7 @@ define(['jquery', 'underscore'], function ($, _) {
                 },
                 data: JSON.stringify(dataToSend)
             });
-        },
-
-        db: function (request, onUpgrade) {
-            var d = new $.Deferred();
-            request.onsuccess = function (evt) {
-                d.resolve(evt.target.result)
-            };
-            request.onerror = function (evt) {
-                d.reject(this.error);
-            };
-            request.onupgradeneeded = onUpgrade;
-            return d.promise();
         }
+
     }
 });
