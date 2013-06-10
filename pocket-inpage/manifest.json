@@ -1,7 +1,7 @@
 {
-    "name": "Page action by URL",
+    "name": "Pocket inpage",
     "version": "1.0",
-    "description": "Shows a page action for urls which have the letter 'g' in them.",
+    "description": "Pocket inpage application",
     "background": {
         "scripts": [
             "libs/require.js",
@@ -10,10 +10,10 @@
     },
     "page_action": {
         "default_icon": "images/notAdded-19.png",
-        "default_title": "There's a 'G' in this URL!"
+        "default_title": "Add item to Pocket"
     },
     "permissions": [
-        "tabs", "http://*/", "https://*/"
+        "tabs", "management", "http://*/", "https://*/"
     ],
     "icons": {
         "19": "images/logo-19.png"

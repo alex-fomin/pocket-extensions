@@ -1,15 +1,20 @@
 require(['js/communicate'], function (pocket) {
 
+    var addedIcon = {"19": "images/added-19.png"};
+    var notAddedIcon = {"19": "images/notAdded-19.png"};
+    var unknownIcon = {"19": "images/unknown-19.png"};
+
+
     function onActionClick(tab) {
-        pocket.isAdded(tab.url)
-            .then(function (isAdded) {
-                var deffer = isAdded ? pocket.remove(tab.url) : pocket.add(tab.url);
+        pocket.find(tab.url)
+            .then(function (item) {
+                var deffer = item ? pocket.remove(tab.url) : pocket.add(tab.url);
                 return deffer.then(function () {
-                    return isAdded;
+                    return !!item;
                 });
             })
-            .done(function (isAdded) {
-                showIcon(tab.id, !isAdded)
+            .done(function (wasAdded) {
+                showIcon(tab.id, wasAdded ? notAddedIcon : addedIcon)
             });
     }
 
@@ -20,19 +25,22 @@ require(['js/communicate'], function (pocket) {
         }
         else {
             chrome.pageAction.show(tabId);
-            pocket.isAdded(tab.url)
-                .done(function (isAdded) {
-                    showIcon(tabId, isAdded);
-                });
+            pocket.find(tab.url)
+                .done(function (item) {
+                    showIcon(tabId, item ? addedIcon : notAddedIcon);
+                })
+                .fail(function(item){
+                    showIcon(tabId, unknownIcon)
+                })
+            ;
         }
     }
 
-    function showIcon(tabId, isAdded) {
-        var addedIcon = {"19": "images/added-19.png"};
-        var notAddedIcon = {"19": "images/notAdded-19.png"};
+
+    function showIcon(tabId, icon) {
         chrome.pageAction.setIcon({
             tabId: tabId,
-            path: isAdded ? addedIcon : notAddedIcon
+            path: icon
         });
     }
 

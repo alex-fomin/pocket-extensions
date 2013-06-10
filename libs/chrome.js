@@ -14,7 +14,7 @@ var chrome = {
          * Clears the alarm with the given name
          * @param {String} name  The name of the alarm to clear
          */
-        "clear": function (name) {
+        "clear": function(name){
 
         },
         "demo": ""
@@ -28,7 +28,7 @@ var chrome = {
 
     "browserAction": {
         onClicked: {
-            addListener: function (onActionClick) {
+            addListener: function(onActionClick){
             }
         }
 
@@ -64,22 +64,42 @@ var chrome = {
         /**
          * get background page
          */
-        "getBackgroundPage": function () {
+        "getBackgroundPage": function(){
 
         }
     },
 
     "tabs": {
         onUpdated: {
-            addListener: function (onTabUpdate) {
+            addListener: function(onTabUpdate){
+            }
+        },
+        getSelected: function(id, callback){
+        },
+        update: function(id, config){
+        }
+    },
+    "pageAction": {
+        onClicked: {
+            addListener: function(onClick){
+            }
+        },
+
+        setIcon : function(config){}
+    },
+
+    runtime: {
+        sendMessage: function(/** String */ id, /** object */ config, /** function */callback){
+        },
+        onMessageExternal: {
+            addListener: function(onMessageExternal){
             }
         }
     },
-    "pageAction":{
-	OnClicked:{
-		addListener:function(onClick){}
-	}
-	}
+
+    management:{
+        getAll:function(callback){}
+    }
 
 };
 
@@ -91,13 +111,13 @@ var webkitNotifications = {
     /**
      * Causes the notification to displayed to the user
      */
-    "show": function () {
+    "show": function(){
 
     },
     /**
      * Causes the notification to not be displayed
      */
-    "cancel": function () {
+    "cancel": function(){
 
     },
     /**
@@ -106,14 +126,14 @@ var webkitNotifications = {
      * @param {String} title title
      * @param {String} body body
      */
-    "createNotification": function (iconUrl, title, body) {
+    "createNotification": function(iconUrl, title, body){
 
     },
     /**
      * The parameter url contains the URL of a resource which contains HTML content to be shown as the content of the notification
      * @param {String} url page url
      */
-    "createHTMLNotification": function (url) {
+    "createHTMLNotification": function(url){
 
     }
 };

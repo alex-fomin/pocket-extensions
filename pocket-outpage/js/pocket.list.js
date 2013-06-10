@@ -3,58 +3,79 @@ define([
     , 'underscore'
     , 'js/storage'
     , 'js/pocket.api'
-], function ($, _, storage, pocketApi) {
+    , 'js/utils'
+], function($, _, storage, pocketApi, utils){
     return {
-        getItems: function () {
-            var since = storage.getSince() || 0;
 
+        _ensure: function(){
+            var since = storage.getSince() || 0;
             var delta = new Date().getTime() / 1000 - since;
 
             if (delta > 3600000) { // one hour
-
-                var d = pocketApi.getItems({
-                    since: since,
-                    detailType: 'simple'
-                });
-
-                d.fail(function (fail) {
-                    if (fail.status == 401) {
-                        d = pocketApi.authentication.authorize()
-                            .then(function () {
-                                return pocketApi.getItems({
-                                    since: since,
-                                    detailType: 'simple'
-                                })
-                            });
-                    }
-                });
-
-
-                return d.then(function (items) {
-                    return storage.update(items);
-                })
+                return this._update(since);
             }
             else {
-                return storage.getItems()
+                return utils.resolve();
             }
         },
 
-        isAdded: function (url) {
-            return this.getItems()
-                .then(function (items) {
-                    return _.any(items, function (item) {
-                        return item.resolved_url == url || item.given_url == url
-                    });
+
+        _update: function(since){
+            return pocketApi
+                .getItems({
+                    since: since,
+                    detailType: 'simple'
+                })
+                .then(
+                function(items){
+                    return storage.update(items);
                 });
         },
 
-        add: function (url) {
-            return pocketApi
-                .add({
-                    url: url
+
+        authorize:function(){
+            return pocketApi.authentication.authorize();
+        },
+
+
+        getItems:function(){
+            return this._ensure().then(function(items){
+                if (items)
+                    return items;
+                else
+                    return storage.getItems();
+            });
+        },
+
+
+        find: function(url){
+            return this._ensure()
+                .then(function(){
+                    return storage.find(url);
+                });
+        },
+
+        add: function(url){
+            return utils.reject(url);
+            /*            return pocketApi
+             .add({ url: url })
+             .then(function(item){
+             return storage.add(item)
+             });
+             */
+        },
+
+        remove: function(url){
+            return storage
+                .find(url)
+                .then(function(item){
+                    return pocketApi.markAsRead({ id: item.id })
+                        .then(function(){
+                            return item.id;
+                        })
                 })
-                .then(function (item) {
-                    return storage.add(item)
+                .then(function(id){
+                    return storage.remove(id)
                 });
         }
     };

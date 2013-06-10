@@ -1,7 +1,7 @@
 {
-    "name": "Pocket",
+    "name": "Pocket outpage",
     "version": "0.1",
-    "description": "Simple pocket application",
+    "description": "Pocket outpage application",
     "browser_action": {
         "default_icon": "images/logo-19.png",
         "default_title": "Random article"
