@@ -4,10 +4,10 @@ define([
     , 'js/storage'
     , 'js/pocket.api'
     , 'js/utils'
-], function($, _, storage, pocketApi, utils){
+], function ($, _, storage, pocketApi, utils) {
     return {
 
-        _ensure: function(){
+        _ensure: function () {
             var since = storage.getSince() || 0;
             var delta = new Date().getTime() / 1000 - since;
 
@@ -20,26 +20,26 @@ define([
         },
 
 
-        _update: function(since){
+        _update: function (since) {
             return pocketApi
                 .getItems({
                     since: since,
                     detailType: 'simple'
                 })
                 .then(
-                function(items){
+                function (items) {
                     return storage.update(items);
                 });
         },
 
 
-        authorize:function(){
+        authorize: function () {
             return pocketApi.authentication.authorize();
         },
 
 
-        getItems:function(){
-            return this._ensure().then(function(items){
+        getItems: function () {
+            return this._ensure().then(function (items) {
                 if (items)
                     return items;
                 else
@@ -48,34 +48,46 @@ define([
         },
 
 
-        find: function(url){
+        find: function (url) {
             return this._ensure()
-                .then(function(){
+                .then(function () {
                     return storage.find(url);
                 });
         },
 
-        add: function(url){
-            return utils.reject(url);
-            /*            return pocketApi
-             .add({ url: url })
-             .then(function(item){
-             return storage.add(item)
-             });
-             */
+        add: function (url) {
+            return pocketApi
+                .add({ url: url })
+                .then(function (item) {
+                    return storage.add(item)
+                });
         },
 
-        remove: function(url){
+        remove: function (url) {
             return storage
                 .find(url)
-                .then(function(item){
-                    return pocketApi.markAsRead({ id: item.id })
-                        .then(function(){
-                            return item.id;
+                .then(function (item) {
+                    return pocketApi.modify({
+                        actions: [
+                            { item_id: item.item_id, action: 'archive' }
+                        ]
+                    })
+                        .then(function () {
+                            return item.item_id;
                         })
                 })
-                .then(function(id){
+                .then(function (id) {
                     return storage.remove(id)
+                });
+        },
+
+        getCount: function () {
+            return this._ensure()
+                .then(_.bind(function () {
+                    return this.getItems();
+                }, this))
+                .then(function (items) {
+                    return items.length;
                 });
         }
     };
