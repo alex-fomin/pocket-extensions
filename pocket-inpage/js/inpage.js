@@ -1,8 +1,8 @@
 require(['js/communicate'], function (pocket) {
 
-    var addedIcon = {"19": "images/added-19.png"};
-    var notAddedIcon = {"19": "images/notAdded-19.png"};
-    var unknownIcon = {"19": "images/unknown-19.png"};
+    var addedIcon = {"19" : "images/added-19.png"};
+    var notAddedIcon = {"19" : "images/notAdded-19.png"};
+    var unknownIcon = {"19" : "images/unknown-19.png"};
 
     function showPocketStatus(tab, added) {
         chrome.pageAction.setIcon({
@@ -16,27 +16,41 @@ require(['js/communicate'], function (pocket) {
         });
     }
 
-    function startRotating(){
+    var rotating = true;
+    function startRotating(tabId) {
 
         var images = [
             'images/loader1-19.png',
             'images/loader2-19.png',
             'images/loader3-19.png',
-            'images/loader4-19.png'
+            'images/loader4-19.png',
+            'images/loader5-19.png',
+            'images/loader6-19.png',
+            'images/loader7-19.png',
+            'images/loader8-19.png'
         ];
 
-        function rotate(){
+        var current = 0;
 
+        rotating = true;
+        function rotate() {
+            if (rotating) {
+                chrome.pageAction.setIcon({tabId : tabId, path : images[current]});
+                current = (current + 1) % images.length;
+                setTimeout(rotate, 300);
+            }
         }
+
+        rotate();
+    }
+
+    function stopRotating(){
+        rotating = false;
     }
 
 
-
     function onActionClick(tab) {
-        chrome.pageAction.setIcon({
-            tabId : tab.id,
-            path  : {'19' : 'images/loader-19.gif'}
-        });
+        startRotating(tab.id);
         pocket.find(tab.url)
             .then(function (item) {
                 var deffer = item ? pocket.remove(tab.url) : pocket.add(tab.url);
@@ -45,6 +59,7 @@ require(['js/communicate'], function (pocket) {
                 });
             })
             .done(function (wasAdded) {
+                stopRotating();
                 showPocketStatus(tab, !wasAdded);
             });
     }
@@ -60,7 +75,7 @@ require(['js/communicate'], function (pocket) {
                 .done(function (item) {
                     showPocketStatus(tab, item);
                 })
-                .fail(function(item){
+                .fail(function (item) {
                     chrome.pageAction.setIcon({
                         tabId : tabId,
                         path  : unknownIcon
