@@ -4,7 +4,6 @@ require(['js/communicate'], function (pocket) {
     var notAddedIcon = {"19": "images/notAdded-19.png"};
     var unknownIcon = {"19": "images/unknown-19.png"};
 
-
     function showPocketStatus(tab, added) {
         chrome.pageAction.setIcon({
             tabId : tab.id,
@@ -16,6 +15,22 @@ require(['js/communicate'], function (pocket) {
             title : added ? 'Remove from Pocket' : 'Add to Pocket'
         });
     }
+
+    function startRotating(){
+
+        var images = [
+            'images/loader1-19.png',
+            'images/loader2-19.png',
+            'images/loader3-19.png',
+            'images/loader4-19.png'
+        ];
+
+        function rotate(){
+
+        }
+    }
+
+
 
     function onActionClick(tab) {
         chrome.pageAction.setIcon({
