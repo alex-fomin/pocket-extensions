@@ -4,7 +4,7 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
         return {
             _openStore: function () {
                 if (!this.db) {
-                    var request = window.indexedDB.open("pocket", 4);
+                    var request = window.indexedDB.open("pocket", 5);
                     this.db = new $.Deferred();
                     request.onsuccess = _.bind(function (evt) {
                         this.db.resolve(evt.target.result)
@@ -14,9 +14,10 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
                     }, this);
                     request.onupgradeneeded = function (event) {
                         var database = event.target.result;
+                        database.deleteObjectStore("articles");
                         var store = database.createObjectStore("articles", { keyPath: "item_id" });
                         store.createIndex("resolved_url", "resolved_url", { unique: true });
-                        store.createIndex("stored_url", "stored_url", { unique: true });
+                        store.createIndex("given_url", "given_url", { unique: true });
                     };
                 }
                 return this.db.then(function (base) {
@@ -99,7 +100,7 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
                     .then(function (store) {
                         return $.when(
                                 findInIndex(store, 'resolved_url'),
-                                findInIndex(store, 'stored_url'))
+                                findInIndex(store, 'given_url'))
                             .then(function (result1, result2) {
                                 return result1 || result2;
                             })
