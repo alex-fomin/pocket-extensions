@@ -9,13 +9,18 @@
         ]
     },
     "page_action": {
-        "default_icon": "images/notAdded-19.png",
+        "default_icon": "images/notAdded-18.png",
         "default_title": "Add item to Pocket"
     },
     "permissions": [
-        "tabs", "management", "http://*/", "https://*/"
+        "tabs",
+        "management",
+        "contextMenus",
+        "http://*/",
+        "https://*/"
     ],
     "icons": {
+        "16": "images/added-18.png",
         "19": "images/logo-19.png"
     },
     "manifest_version": 2
