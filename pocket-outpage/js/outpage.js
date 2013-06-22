@@ -79,7 +79,7 @@ require(['underscore', 'js/pocket.list'], function (_, pocketList) {
             .then(updateIcon)
             .done(function () {
                 debugger;
-                setTimeout(update, 1000 * 60);
+                setTimeout(update, 5000 * 60);
             })
     };
     updateIcon();
