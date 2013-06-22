@@ -7,29 +7,25 @@ define([
 ], function ($, _, storage, pocketApi, utils) {
     return {
 
-        _ensure: function () {
-            var since = storage.getSince() || 0;
-            var delta = new Date().getTime() / 1000 - since;
-
-            if (delta > 3600000) { // one hour
-                return this._update(since);
-            }
-            else {
-                return utils.resolve();
-            }
+        isAuthenticated: function () {
+            return !!localStorage['access_token'];
         },
 
-
-        _update: function (since) {
-            return pocketApi
-                .getItems({
-                    since: since,
-                    detailType: 'simple'
-                })
-                .then(
-                function (items) {
-                    return storage.update(items);
-                });
+        update: function (since) {
+            if (this.isAuthenticated()) {
+                since = since || storage.getSince() || 0;
+                return pocketApi
+                    .getItems({
+                        since: since,
+                        detailType: 'simple'
+                    })
+                    .then(function (items) {
+                        return storage.update(items, since);
+                    });
+            }
+            else {
+                return $.Deferred().reject('Not authenticated');
+            }
         },
 
 
@@ -39,56 +35,52 @@ define([
 
 
         getItems: function () {
-            return this._ensure().then(function (items) {
-                if (items)
-                    return items;
-                else
-                    return storage.getItems();
-            });
+            return storage.getItems();
         },
 
 
         find: function (url) {
-            return this._ensure()
-                .then(function () {
-                    return storage.find(url);
-                });
+            return storage.find(url);
         },
 
         add: function (url) {
-            return pocketApi
-                .add({ url: url })
-                .then(function (item) {
-                    return storage.add(item)
-                });
+            if (this.isAuthenticated()) {
+                return pocketApi
+                    .add({ url: url })
+                    .then(function (item) {
+                        return storage.add(item)
+                    });
+            } else {
+                return $.Deferred().reject('Not authenticated');
+            }
         },
 
         remove: function (url) {
-            return storage
-                .find(url)
-                .then(function (item) {
-                    return pocketApi.modify({
-                        actions: [
-                            { item_id: item.item_id, action: 'archive' }
-                        ]
-                    })
-                        .then(function () {
-                            return item.item_id;
+            if (this.isAuthenticated()) {
+                return storage
+                    .find(url)
+                    .then(function (item) {
+                        return pocketApi.modify({
+                            actions: [
+                                { item_id: item.item_id, action: 'archive' }
+                            ]
                         })
-                })
-                .then(function (id) {
-                    return storage.remove(id)
-                });
+                            .then(function () {
+                                return item.item_id;
+                            })
+                    })
+                    .then(function (id) {
+                        return storage.remove(id)
+                    });
+            } else {
+                return $.Deferred().reject('Not authenticated');
+            }
         },
 
         getCount: function () {
-            return this._ensure()
-                .then(_.bind(function () {
-                    return this.getItems();
-                }, this))
-                .then(function (items) {
-                    return items.length;
-                });
+            return this.getItems().then(function (items) {
+                return items.length;
+            });
         }
     };
 });

@@ -4,7 +4,7 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
         return {
             _openStore: function () {
                 if (!this.db) {
-                    var request = window.indexedDB.open("pocket", 5);
+                    var request = window.indexedDB.open("pocket", 1);
                     this.db = new $.Deferred();
                     request.onsuccess = _.bind(function (evt) {
                         this.db.resolve(evt.target.result)
@@ -14,7 +14,6 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
                     }, this);
                     request.onupgradeneeded = function (event) {
                         var database = event.target.result;
-                        database.deleteObjectStore("articles");
                         var store = database.createObjectStore("articles", { keyPath: "item_id" });
                         store.createIndex("resolved_url", "resolved_url", { unique: true });
                         store.createIndex("given_url", "given_url", { unique: true });
@@ -26,6 +25,12 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
                 });
             },
 
+            _clear: function () {
+                return this._openStore()
+                    .then(function (store) {
+                        return utils.wrap(store.clear());
+                    });
+            },
 
             _updateItems: function (items) {
                 return this._openStore()
@@ -48,9 +53,14 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
                 return parseInt(localStorage.getItem('since') || '0', 10);
             },
 
-            update: function (items) {
-                localStorage.setItem('since', items.since);
-                return this._updateItems(items.list);
+            update: function (items, since) {
+
+                var d = since ? $.Deferred().resolve() : this._clear();
+
+                return d.then(_.bind(function () {
+                    localStorage.setItem('since', items.since);
+                    return this._updateItems(items.list);
+                }, this));
             },
 
             add: function (item) {
