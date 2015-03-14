@@ -17,25 +17,6 @@ require(['underscore', 'js/pocket.list'], function (_, pocketList) {
 
     }
 
-    /*        items.done(function (list) {
-     d.resolve(list);
-     });
-     items.fail(function (fail) {
-     if (fail.status == 401) {
-     pocketList.authorize()
-     .then(function () {
-     pocketList.getItems().done(function (list) {
-     d.resolve(list);
-     });
-     });
-     }
-     else {
-     d.reject(fail);
-     }
-     });
-
-
-     d*/
 
     chrome.browserAction.onClicked.addListener(function () {
         var d = pocketList.isAuthenticated()

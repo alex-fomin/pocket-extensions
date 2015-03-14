@@ -69,7 +69,7 @@ require(['js/communicate'], function (pocket) {
 
 
     function onTabUpdate(tabId, changeInfo, tab) {
-        if (tab.url.indexOf('chrome://') == 0) {
+        if (tab.url.indexOf('chrome://') === 0) {
             chrome.pageAction.hide(tabId);
         }
         else {
@@ -96,10 +96,7 @@ require(['js/communicate'], function (pocket) {
     function add(tab, url) {
         startRotating(tab.id);
         pocket.add(url)
-            .done(function () {
-                stopRotating();
-                showPocketStatus(tab, true);
-            });
+            .always(stopRotating);
     }
 
     var menuId = chrome.contextMenus.create({
