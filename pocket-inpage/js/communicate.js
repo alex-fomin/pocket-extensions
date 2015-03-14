@@ -1,33 +1,33 @@
-define(['underscore', 'jquery'], function(_, $){
-    var outerExtensionId = (function(){
-        var result = new $.Deferred();
-        chrome.management.getAll(function(extensions){
-            var info = _.find(extensions, function(info){
-                return info.name == 'Pocket outpage'
+define(['underscore'], function(_){
+    var outerExtensionId = new Promise(function(resolve, reject){
+        chrome.management.getAll(function(extensions) {
+            var info = _.find(extensions, function(info) {
+                return info.name == 'Pocket outpage';
             });
+        
             if (info) {
-                result.resolve(info.id);
+                resolve(info.id);
             }
             else {
-                result.reject('Could not find outpage extension');
+                reject('Could not find outpage extension');
             }
         });
-        return result.promise();
-    })();
+    });
+
 
     function sendMessage(config){
         return outerExtensionId.then(function(outerExtId){
-            var d = new $.Deferred();
+            return new Promise(function(resolve,reject){
             chrome.runtime.sendMessage(outerExtId, config,
                 function(response){
                     if (!_.isUndefined(response.success)){
-                        d.resolve(response.success);
+                        resolve(response.success);
                     }
                     else {
-                        d.reject(response.fail || 'fail');
+                        reject(response.fail || 'fail');
                     }
                 });
-            return d.promise();
+            });
         });
     }
 

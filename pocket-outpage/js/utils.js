@@ -38,16 +38,5 @@ define(['jquery'], function ($) {
                 data: JSON.stringify(dataToSend)
             });
         }
-        /*                .fail(function(fail){
-         if (fail.status == 401) {
-         d = pocketApi.authentication.authorize()
-         .then(function(){
-         return pocketApi.getItems({
-         since: since,
-         detailType: 'simple'
-         })
-         });
-         }
-         });*/
     }
 });
