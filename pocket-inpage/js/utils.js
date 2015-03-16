@@ -18,14 +18,14 @@ define([], function() {
     ];
 
     return {
-      showPocketStatus: function(tab, added) {
+      showPocketStatus: function(tabId, added) {
           chrome.pageAction.setIcon({
-              tabId : tab.id,
+              tabId : tabId,
               path  : added ? addedIcon : notAddedIcon
           });
 
           chrome.pageAction.setTitle({
-              tabId : tab.id,
+              tabId : tabId,
               title : added ? 'Remove from Pocket' : 'Add to Pocket'
           });
       },

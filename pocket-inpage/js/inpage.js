@@ -1,34 +1,78 @@
-require(['js/communicate', 'js/urlMode', 'js/utils'], function (pocket, urlMode, utils) {
-    
-    var currentMode=urlMode;
+require(['js/communicate', 'js/utils'], function(pocket, utils) {
 
-    function onActionClick(tab) {
-      currentMode.onActionClick(tab);
-    }
-
-
-    function onTabUpdate(tabId, changeInfo, tab) {
-      currentMode.onTabUpdate(tabId, changeInfo, tab);
-    }
-
-
-    chrome.tabs.onUpdated.addListener(onTabUpdate);
-    chrome.pageAction.onClicked.addListener(onActionClick);
-
-    function add(tab, url) {
+    chrome.pageAction.onClicked.addListener(function(tab) {
+        var url = map[tab.id] || tab.url;
+        if (map[tab.id]) {
+            delete map[tab.id];
+        }
         utils.startRotating(tab.id);
-        pocket.add(url)
-            .then(stopRotating, stopRotating);
+
+        pocket.find(url)
+        .then(function(item) {
+            var deffer = item ? pocket.remove(url) : pocket.add(url);
+            return deffer.then(function() {
+                return !!item;
+            });
+        }, utils.stopRotating)
+        .then(function(wasAdded) {
+            utils.stopRotating();
+            utils.showPocketStatus(tab.id, !wasAdded);
+        }, utils.stopRotating);
     }
+    );
 
     var menuId = chrome.contextMenus.create({
-        type                : 'normal',
-        title               : 'Add to Pocket',
-        contexts            : ["page", "frame", "link"],
-        documentUrlPatterns : ["http://*/*", "https://*/*"],
-        targetUrlPatterns   : ["http://*/*", "https://*/*"],
-        onclick             : function (info, tab) {
-            add(tab, info.linkUrl || info.pageUrl);
+        type: 'normal',
+        title: 'Add to Pocket',
+        contexts: ["page", "frame", "link"],
+        documentUrlPatterns: ["http://*/*", "https://*/*"],
+        targetUrlPatterns: ["http://*/*", "https://*/*"],
+        onclick: function(info, tab) {
+            utils.startRotating(tab.id);
+
+            pocket.add(info.linkUrl || info.pageUrl)
+            .then(stopRotating, stopRotating);
         }
     });
+
+    var map = {};
+
+    var update = function(tabId, urlBefore, urlAfter) {
+        utils.stopRotating();
+        chrome.pageAction.show(tabId);
+        var statusBefore = pocket.find(urlBefore);
+        var statusAfter = urlAfter ? pocket.find(urlAfter) : new Promise(function(resolve) {
+            resolve(false);
+        });
+        Promise.all([statusBefore, statusAfter])
+        .then(function(result) {
+            var hasBefore = result[0];
+            var hasAfter = result[1];
+            utils.showPocketStatus(tabId, hasBefore || hasAfter);
+            map[tabId] = hasBefore ? urlBefore : urlAfter;
+        });
+    };
+
+
+    chrome.webNavigation.onBeforeNavigate.addListener(function(a) {
+        if (a.frameId === 0) {
+            map[a.tabId] = a.url;
+            update(a.tabId, a.url);
+        }
+    });
+
+    var afterUpdate = function(a){
+        if (a.frameId === 0) {
+            var urlBefore = map[a.tabId];
+            var urlAfter = a.url;
+
+            update(a.tabId, urlBefore, urlAfter);
+        }
+    };
+
+
+    chrome.webNavigation.onCommitted.addListener(afterUpdate);
+    chrome.webNavigation.onDOMContentLoaded.addListener(afterUpdate);
+    chrome.webNavigation.onCompleted.addListener(afterUpdate);
+
 });

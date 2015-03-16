@@ -17,7 +17,8 @@
         "management",
         "contextMenus",
         "http://*/",
-        "https://*/"
+        "https://*/",
+        "webNavigation"
     ],
     "icons": {
         "16": "images/added-18.png",
