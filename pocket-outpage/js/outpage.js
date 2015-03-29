@@ -33,24 +33,20 @@ require(['underscore', 'js/pocket.list', 'js/pocket.api.authentication', 'js/sto
       }
     });
 
-    chrome.browserAction.onClicked.addListener(function () {
-        var d = pocketList.isAuthenticated()
-            ? $.Deferred().resolve()
-            : authentication.authorize().then(function () {
-                return pocketList.update();
-              })
-              .then(updateIcon);
+    chrome.browserAction.onClicked.addListener(function (arg) {
+      var tabId = arg.id;
+      var d = pocketList.isAuthenticated()
+          ? $.Deferred().resolve()
+          : authentication.authorize()
+            .then(pocketList.update.bind(pocketList))
+            .then(updateIcon);
 
         d
-            .then(function () {
-                return pocketList.getItems();
-            })
+            .then(pocketList.getItems.bind(pocketList))
             .done(function (items) {
                 if (items.length) {
                     var item = items[_.random(items.length - 1)];
-                    chrome.tabs.getSelected(null, function (tab) {
-                        chrome.tabs.update(tab.id, {url: item.resolved_url});
-                    });
+                    chrome.tabs.update(tabId, {url: item.resolved_url});
                 }
             });
     });
