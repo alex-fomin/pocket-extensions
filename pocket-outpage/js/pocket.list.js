@@ -1,10 +1,8 @@
-define([
-    'jquery'
-    , 'underscore'
-    , 'js/storage'
-    , 'js/pocket.api'
-    , 'js/utils'
-], function ($, _, storage, pocketApi, utils) {
+define(function(require){
+    var $ = require('jquery'),
+        storage = require('js/storage'),
+        pocketApi = require('js/pocket.api');
+
     return {
 
         isAuthenticated: function () {
@@ -28,12 +26,6 @@ define([
             }
         },
 
-
-        authorize: function () {
-            return pocketApi.authentication.authorize();
-        },
-
-
         getItems: function () {
             return storage.getItems();
         },
@@ -48,7 +40,7 @@ define([
                 return pocketApi
                     .add({ url: url })
                     .then(function (item) {
-                        return storage.add(item)
+                        return storage.add(item);
                     });
             } else {
                 return $.Deferred().reject('Not authenticated');
@@ -67,10 +59,10 @@ define([
                         })
                             .then(function () {
                                 return item.item_id;
-                            })
+                            });
                     })
                     .then(function (id) {
-                        return storage.remove(id)
+                        return storage.remove(id);
                     });
             } else {
                 return $.Deferred().reject('Not authenticated');

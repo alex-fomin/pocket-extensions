@@ -49,5 +49,5 @@ define([], function() {
       stopRotating:function() {
         rotating = false;
       }
-    }
+    };
 });

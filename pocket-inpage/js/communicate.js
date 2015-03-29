@@ -43,5 +43,5 @@ define(['underscore'], function(_){
         remove: function(url){
             return sendMessage({remove: url});
         }
-    }
+    };
 });

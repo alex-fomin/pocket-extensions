@@ -13,10 +13,18 @@
         ]
     },
     "permissions": [
-        "tabs", "http://*/", "https://*/"
+        "tabs", 
+        "http://*/", 
+        "https://*/",
+        "contextMenus",
+        "identity"
     ],
     "icons": {
         "19": "images/logo-19.png"
+    },
+    "oauth2": {
+      "client_id": "1071794135138-fc0iu7s221uj69pnqq4meb9qn441goi4.apps.googleusercontent.com",
+      "scopes":[]
     },
     "manifest_version": 2
 }

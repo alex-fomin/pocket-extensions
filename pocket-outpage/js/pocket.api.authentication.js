@@ -1,10 +1,14 @@
-define([
-    'jquery'
-    , 'underscore'
-    , 'js/utils'
-], function ($, _, utils) {
+define(function(require){
+    
+    var $ = require('jquery'),
+        _ = require('underscore'),
+        utils = require('js/utils');
+
+    var redirect_uri = chrome.identity.getRedirectURL()+'oauth';
+
+
     return {
-        redirectUri: chrome.extension.getURL('html/redirect.html'),
+ 
 
         isAuthorized: function () {
             return localStorage['access_token'];
@@ -18,38 +22,35 @@ define([
             if (this.isAuthorized()) {
                 return utils.resolve(true);
             } else {
-                return this.obtainRequestToken()
-                    .then(_.bind(this.openLoginPage, this))
-                    .then(_.bind(this.authorizeApp, this))
-                    .then(_.bind(this.saveAccessToken, this));
+
+
+              return utils
+                .makeCall('oauth/request', {redirect_uri: redirect_uri})
+                .then(function(obj){
+                  var result = $.Deferred();
+          
+                  var url = 'https://getpocket.com/auth/authorize?request_token='+obj.code+
+                  '&redirect_uri='+redirect_uri;
+              
+                  chrome.identity.launchWebAuthFlow({
+                       'url': url, 
+                       'interactive': true
+                    }, function(redirect_url) {
+                  
+                      result.resolve(obj.code);
+                    
+                      });
+                  
+                  return result.promise();
+                })
+                .then(function(code){
+                  return utils.makeCall('oauth/authorize',{code:code});
+                })
+                .then(function(obj){
+                  this.saveAccessToken(obj);
+                }.bind(this));
+
             }
-        },
-
-        openLoginPage: function (token) {
-            var d = new $.Deferred();
-            chrome.windows.create({
-                url: 'https://getpocket.com/auth/authorize?request_token=' + token.code + '&redirect_uri=' + this.redirectUri,
-                type: 'popup'
-            }, function (win) {
-
-                var closeListener = function (windowId) {
-                    if (win.id == windowId) {
-                        chrome.windows.onRemoved.removeListener(closeListener);
-                        d.resolve(token.code);
-                    }
-                };
-
-                chrome.windows.onRemoved.addListener(closeListener);
-            });
-            return d.promise();
-        },
-
-        authorizeApp: function (code) {
-            return utils.makeCall('oauth/authorize', {code: code});
-        },
-
-        obtainRequestToken: function () {
-            return utils.makeCall('oauth/request', { redirect_uri: this.redirectUri });
         }
     };
 });

@@ -38,5 +38,5 @@ define(['jquery'], function ($) {
                 data: JSON.stringify(dataToSend)
             });
         }
-    }
+    };
 });

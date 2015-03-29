@@ -7,7 +7,7 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
                     var request = window.indexedDB.open("pocket", 1);
                     this.db = new $.Deferred();
                     request.onsuccess = _.bind(function (evt) {
-                        this.db.resolve(evt.target.result)
+                        this.db.resolve(evt.target.result);
                     }, this);
                     request.onerror = _.bind(function () {
                         this.db.reject(this.error);
@@ -113,7 +113,7 @@ define(['jquery', 'underscore', 'js/utils'], function ($, _, utils) {
                                 findInIndex(store, 'given_url'))
                             .then(function (result1, result2) {
                                 return result1 || result2;
-                            })
+                            });
                     });
             }
         };

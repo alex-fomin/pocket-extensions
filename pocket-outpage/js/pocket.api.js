@@ -1,13 +1,8 @@
-define([
-    'jquery'
-    , 'underscore'
-    , 'js/pocket.api.authentication'
-    , 'js/utils'
-], function ($, _, authentication, utils) {
-
+define(function(require) {
+  
+  var utils = require('js/utils');
 
     return {
-        authentication: authentication,
         getItems: function (config) {
             return utils.makeCall('get', config);
         },

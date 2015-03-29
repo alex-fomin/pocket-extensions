@@ -1,29 +1,45 @@
-require(['underscore', 'js/pocket.list'], function (_, pocketList) {
+require(['underscore', 'js/pocket.list', 'js/pocket.api.authentication', 'js/storage'],
+  function(_, pocketList, authentication, storage) {
 
     function updateIcon() {
-        if (pocketList.isAuthenticated()) {
-            pocketList.getCount()
-                .then(function (count) {
-                    chrome.browserAction.setBadgeText({
-                        text: count.toString()
-                    })
-                });
-        }
-        else {
-            chrome.browserAction.setBadgeText({
+      pocketList.getCount()
+        .done(function(count){
+          chrome.browserAction.setBadgeText({
+            text: count.toString()
+          });
+        })
+        .fail(function(){
+          chrome.browserAction.setBadgeText({
                 text: '?'
             });
-        }
-
+        });
     }
 
+
+    chrome.contextMenus.create({
+      title: "Clear",
+      contexts: ["browser_action"],
+      onclick: function() {
+        if (confirm('Clear all?')){
+          storage._clear()
+            .then(function(){
+              delete localStorage['access_token'];
+              delete localStorage['since'];
+              alert('Done');
+              updateIcon();
+              update();
+            });
+        }
+      }
+    });
 
     chrome.browserAction.onClicked.addListener(function () {
         var d = pocketList.isAuthenticated()
             ? $.Deferred().resolve()
-            : pocketList.authorize().then(function () {
+            : authentication.authorize().then(function () {
                 return pocketList.update();
-              });
+              })
+              .then(updateIcon);
 
         d
             .then(function () {
@@ -45,10 +61,10 @@ require(['underscore', 'js/pocket.list'], function (_, pocketList) {
             var method = _.keys(request)[0];
             pocketList[method](request[method])
                 .done(function (result) {
-                    sendResponse({success: result || null})
+                    sendResponse({success: result || null});
                 })
                 .fail(function (result) {
-                    sendResponse({fail: result})
+                    sendResponse({fail: result});
                 })
                 .done(updateIcon);
 
@@ -60,9 +76,8 @@ require(['underscore', 'js/pocket.list'], function (_, pocketList) {
             .then(updateIcon)
             .done(function () {
                 setTimeout(update, 5000 * 60);
-            })
+            });
     };
     updateIcon();
     update();
-})
-;
+});
