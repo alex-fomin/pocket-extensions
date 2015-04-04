@@ -15,24 +15,6 @@ require(['underscore', 'js/pocket.list', 'js/pocket.api.authentication', 'js/sto
         });
     }
 
-
-    chrome.contextMenus.create({
-      title: "Clear",
-      contexts: ["browser_action"],
-      onclick: function() {
-        if (confirm('Clear all?')){
-          storage._clear()
-            .then(function(){
-              delete localStorage['access_token'];
-              delete localStorage['since'];
-              alert('Done');
-              updateIcon();
-              update();
-            });
-        }
-      }
-    });
-
     chrome.browserAction.onClicked.addListener(function (arg) {
       var tabId = arg.id;
       var d = pocketList.isAuthenticated()

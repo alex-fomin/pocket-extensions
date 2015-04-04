@@ -1,7 +1,7 @@
 {
-    "name": "Pocket inpage",
+    "name": "Add to Pocket",
     "version": "1.0",
-    "description": "Pocket inpage application",
+    "description": "Adds an article to pocket (http://getpocket.com). Indicates whether the current page is in Pocket",
     "background": {
         "scripts": [
             "libs/require.js",
@@ -9,8 +9,11 @@
         ]
     },
     "page_action": {
-        "default_icon": "images/notAdded-18.png",
-        "default_title": "Add item to Pocket"
+          "default_icon": {
+            "19": "images/notAdded-19.png",
+            "38": "images/notAdded-38.png"
+          },
+          "default_title": "Add item to Pocket"
     },
     "permissions": [
         "tabs",
@@ -20,9 +23,9 @@
         "https://*/",
         "webNavigation"
     ],
-    "icons": {
-        "16": "images/added-18.png",
-        "19": "images/logo-19.png"
-    },
-    "manifest_version": 2
+    "manifest_version": 2,
+    "icons":{
+      "128": "images/logo-128.png",
+      "48": "images/logo-48.png"
+    }
 }

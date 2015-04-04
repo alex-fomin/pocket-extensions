@@ -1,27 +1,25 @@
-define([], function() {
+define(function(require) {
   
+    var _ = require('underscore');
   
-    var addedIcon = "images/added-18.png";
-    var notAddedIcon = "images/notAdded-18.png";
-    var unknownIcon = "images/unknown-18.png";
+    var addedData = {19: "images/added-19.png", 38: "images/added-38.png"};
+    var notAddedData = {19: "images/notAdded-19.png", 38: "images/notAdded-38.png"};
     var rotating = false;
 
-    var images = [
-      'images/loader/1.png',
-      'images/loader/2.png',
-      'images/loader/3.png',
-      'images/loader/4.png',
-      'images/loader/5.png',
-      'images/loader/6.png',
-      'images/loader/7.png',
-      'images/loader/8.png'
-    ];
+    var images =[];
+    
+    for(var i=1;i<=8;i++){
+      images.push({
+        19: 'images/loader/'+i+'-19.png',
+        38: 'images/loader/'+i+'-38.png'
+      });
+    }
 
     return {
       showPocketStatus: function(tabId, added) {
           chrome.pageAction.setIcon({
               tabId : tabId,
-              path  : added ? addedIcon : notAddedIcon
+              path  : added ? addedData : notAddedData
           });
 
           chrome.pageAction.setTitle({
