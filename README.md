@@ -11,5 +11,5 @@ pocket-outpage
 --------------
 Open random saved url
 
-![Page is not saved](/off.png?raw=true)
-![Page is saved](/on.png?raw=true)
+![Page is not saved](assets/off.png?raw=true)
+![Page is saved](assets/on.png?raw=true)

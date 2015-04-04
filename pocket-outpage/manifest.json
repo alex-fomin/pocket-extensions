@@ -1,6 +1,6 @@
 {
     "name": "Take from Pocket",
-    "version": "1.0",
+    "version": "1.0.1",
     "description": "Opens random article from Pocket (http://getpocket.com). Shows number of unread articles in Pocket.",
     "browser_action": {
         "default_icon": "images/logo-19.png",
@@ -24,7 +24,7 @@
         "48": "images/logo-48.png"
     },
     "oauth2": {
-      "client_id": "1071794135138-fc0iu7s221uj69pnqq4meb9qn441goi4.apps.googleusercontent.com",
+      "client_id": "1071794135138-higpiildcmkbifobkbcmigbipabnkgkd.apps.googleusercontent.com",
       "scopes":[]
     },
     "manifest_version": 2
