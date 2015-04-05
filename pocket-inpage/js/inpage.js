@@ -31,25 +31,39 @@ require(['js/communicate', 'js/utils'], function(pocket, utils) {
             utils.startRotating(tab.id);
 
             pocket.add(info.linkUrl || info.pageUrl)
-            .then(stopRotating, stopRotating);
+            .then(stopRotating);
         }
     });
+
+    var find = function(url){
+      return url ? pocket.find(url) : new Promise(function(resolve) {
+              resolve(false);
+            });
+    };
 
     var map = {};
 
     var update = function(tabId, urlBefore, urlAfter) {
         utils.stopRotating();
-        chrome.pageAction.show(tabId);
-        var statusBefore = pocket.find(urlBefore);
-        var statusAfter = urlAfter ? pocket.find(urlAfter) : new Promise(function(resolve) {
-            resolve(false);
-        });
-        Promise.all([statusBefore, statusAfter])
-        .then(function(result) {
-            var hasBefore = result[0];
-            var hasAfter = result[1];
-            utils.showPocketStatus(tabId, hasBefore || hasAfter);
-            map[tabId] = hasBefore ? urlBefore : urlAfter;
+        chrome.tabs.get(tabId, function(tab){
+          var statusBefore;
+          var statusAfter;
+          if (!tab) {
+            statusBefore = new Promise(function(resolve){resolve(false);});
+            statusAfter = statusBefore;
+          }
+          else {
+            chrome.pageAction.show(tabId);
+            statusBefore = find(urlBefore);
+            statusAfter = find(urlAfter);
+          }
+          Promise.all([statusBefore, statusAfter])
+          .then(function(result) {
+              var hasBefore = result[0];
+              var hasAfter = result[1];
+              utils.showPocketStatus(tabId, hasBefore || hasAfter);
+              map[tabId] = hasBefore ? urlBefore : urlAfter;
+          });
         });
     };
 

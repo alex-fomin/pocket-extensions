@@ -2,7 +2,9 @@ define(['underscore'], function(_){
     var outerExtensionId = new Promise(function(resolve, reject){
         chrome.management.getAll(function(extensions) {
             var info = _.find(extensions, function(info) {
-                return info.name == 'Pocket outpage';
+                return info.id == 'higpiildcmkbifobkbcmigbipabnkgkd' ||
+                  info.id == 'adoeddjiecnolhcogpfnhlbbjhhinjjk';
+                
             });
         
             if (info) {

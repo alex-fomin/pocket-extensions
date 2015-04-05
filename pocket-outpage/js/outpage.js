@@ -17,45 +17,44 @@ require(['underscore', 'js/pocket.list', 'js/pocket.api.authentication', 'js/sto
 
     chrome.browserAction.onClicked.addListener(function (arg) {
       var tabId = arg.id;
-      var d = pocketList.isAuthenticated()
-          ? $.Deferred().resolve()
-          : authentication.authorize()
-            .then(pocketList.update.bind(pocketList))
-            .then(updateIcon);
-
-        d
-            .then(pocketList.getItems.bind(pocketList))
-            .done(function (items) {
-                if (items.length) {
-                    var item = items[_.random(items.length - 1)];
-                    chrome.tabs.update(tabId, {url: item.resolved_url});
-                }
-            });
+      authentication.authorize()
+        .then(update)
+        .then(pocketList.getItems.bind(pocketList))
+        .done(function (items) {
+          if (items.length) {
+            var item = items[_.random(items.length - 1)];
+            chrome.tabs.update(tabId, {url: item.resolved_url});
+          }
+      });
     });
 
 
     chrome.runtime.onMessageExternal.addListener(
         function (request, sender, sendResponse) {
             var method = _.keys(request)[0];
-            pocketList[method](request[method])
-                .done(function (result) {
-                    sendResponse({success: result || null});
-                })
-                .fail(function (result) {
-                    sendResponse({fail: result});
-                })
-                .done(updateIcon);
+            if (method && pocketList[method]) {
+              pocketList[method](request[method])
+                  .done(function (result) {
+                      sendResponse({success: result || null});
+                  })
+                  .fail(function (result) {
+                      sendResponse({fail: result});
+                  })
+                  .done(updateIcon);
+            }
+            else {
+              sendResponse({fail:'No such method'});
+            }
 
             return true;
         });
 
-    var update = function () {
-        pocketList.update()
-            .then(updateIcon)
-            .done(function () {
-                setTimeout(update, 5000 * 60);
-            });
+
+    var update = function(){
+      return pocketList.update().then(updateIcon);
     };
-    updateIcon();
-    update();
+
+    update().then(function(){
+      setInterval(update, 1000*60);
+    });
 });

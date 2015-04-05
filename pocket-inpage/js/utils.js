@@ -2,17 +2,22 @@ define(function(require) {
   
     var _ = require('underscore');
   
-    var addedData = {19: "images/added-19.png", 38: "images/added-38.png"};
-    var notAddedData = {19: "images/notAdded-19.png", 38: "images/notAdded-38.png"};
-    var rotating = false;
+    var image = function(name){
+      return {
+        19: 'images/'+name+'-19.png',
+        38: 'images/'+name+'-38.png'
+      };
+    };
+  
+  
+    var addedData = image('added');
+    var notAddedData = image('notAdded');
+    var rotating = 0;
 
-    var images =[];
-    
+    var images = [];
+
     for(var i=1;i<=8;i++){
-      images.push({
-        19: 'images/loader/'+i+'-19.png',
-        38: 'images/loader/'+i+'-38.png'
-      });
+      images.push(image('loader/'+i));
     }
 
     return {
@@ -32,20 +37,16 @@ define(function(require) {
       startRotating: function(tabId) {
         var current = 0;
 
-        rotating = true;
-        function rotate() {
-            if (rotating) {
-                chrome.pageAction.setIcon({tabId : tabId, path : images[current]});
-                current = (current + 1) % images.length;
-                setTimeout(rotate, 150);
-            }
-        }
-
-        rotate();
+        rotating = setInterval(function(){
+          chrome.pageAction.setIcon({tabId : tabId, path : images[current]});
+          current = (current + 1) % images.length;
+        }, 150);
       },
 
       stopRotating:function() {
-        rotating = false;
+        if (rotating) {
+          clearInterval(rotating);
+        }
       }
     };
 });
