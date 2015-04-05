@@ -55,6 +55,6 @@ require(['underscore', 'js/pocket.list', 'js/pocket.api.authentication', 'js/sto
     };
 
     update().then(function(){
-      setInterval(update, 1000*60);
+      setInterval(update, 5000*60);
     });
 });
