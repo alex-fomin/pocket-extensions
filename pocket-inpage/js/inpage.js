@@ -2,12 +2,12 @@ require(['js/communicate', 'js/utils'], function(pocket, utils) {
   var map = {};
 
   var update = function(tabId, urlBefore, urlAfter) {
-    chrome.pageAction.show(tabId);
     utils.stopRotating();
     chrome.tabs.get(tabId, function(tab){
       var statusBefore;
       var statusAfter;
       if (chrome.runtime.lastError || !tab) {
+        chrome.pageAction.show(tabId);
         statusBefore = Promise.resolve(false);
         statusAfter = statusBefore;
       }
