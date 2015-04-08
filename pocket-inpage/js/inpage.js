@@ -1,17 +1,22 @@
 require(['js/communicate', 'js/utils'], function(pocket, utils) {
   var map = {};
 
+    var find = function(url){
+      return url ? pocket.find(url) : new Promise(function(resolve) { resolve(false); });
+    };
+
+
   var update = function(tabId, urlBefore, urlAfter) {
     utils.stopRotating();
     chrome.tabs.get(tabId, function(tab){
       var statusBefore;
       var statusAfter;
       if (chrome.runtime.lastError || !tab) {
-        chrome.pageAction.show(tabId);
         statusBefore = Promise.resolve(false);
         statusAfter = statusBefore;
       }
       else {
+        chrome.pageAction.show(tabId);
         statusBefore = find(urlBefore);
         statusAfter = urlBefore == urlAfter ? statusBefore :  find(urlAfter);
       }
@@ -19,7 +24,7 @@ require(['js/communicate', 'js/utils'], function(pocket, utils) {
         .then(function(result) {
           var hasBefore = result[0];
           var hasAfter = result[1];
-          utils.showPocketStatus(tabId, hasBefore || hasAfter);
+          utils.showPocketStatus(tabId, !!(hasBefore || hasAfter));
           map[tabId] = hasBefore ? urlBefore : urlAfter;
         });
       });
@@ -61,9 +66,6 @@ require(['js/communicate', 'js/utils'], function(pocket, utils) {
       }
     });
   
-    var find = function(url){
-      return url ? pocket.find(url) : new Promise(function(resolve) { resolve(false); });
-    };
   
   
     chrome.webNavigation.onBeforeNavigate.addListener(function(a) {

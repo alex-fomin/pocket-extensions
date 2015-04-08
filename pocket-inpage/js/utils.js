@@ -30,7 +30,7 @@ define(function(require) {
           title = 'Remove from Pocket';
         } else if (added === false){
           icon = notAddedData;
-          title = 'Add to Pokcet';
+          title = 'Add to Pocket';
         } else {
           icon = notLoadedData;
           title = 'Take from Pocket is not intalled';
