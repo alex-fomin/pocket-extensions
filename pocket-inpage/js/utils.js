@@ -12,6 +12,7 @@ define(function(require) {
   
     var addedData = image('added');
     var notAddedData = image('notAdded');
+    var notLoadedData = image('notLoaded');
     var rotating = 0;
 
     var images = [];
@@ -21,20 +22,31 @@ define(function(require) {
     }
 
     return {
-      
-      
-      
       showPocketStatus: function(tabId, added) {
-        chrome.tabs.get(tabId, function(tab){
+        var icon;
+        var title;
+        if (added === true){
+          icon = addedData;
+          title = 'Remove from Pocket';
+        } else if (added === false){
+          icon = notAddedData;
+          title = 'Add to Pokcet';
+        } else {
+          icon = notLoadedData;
+          title = 'Take from Pocket is not intalled';
+        }
+        
+        
+        chrome.tabs.get(tabId, function(tab) {
           if (!chrome.runtime.lastError && tab){
             chrome.pageAction.setIcon({
                 tabId : tabId,
-                path  : added ? addedData : notAddedData
+                path  : icon
             });
   
             chrome.pageAction.setTitle({
                 tabId : tabId,
-                title : added ? 'Remove from Pocket' : 'Add to Pocket'
+                title : title
             });
           }
         });
